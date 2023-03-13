@@ -1,35 +1,136 @@
-import React from 'react'
+// import area
+
+
+import React, { useEffect, useState } from 'react'
 import { Button, Form, Table } from 'react-bootstrap'
 
+
+//functonal defination area
 export default function CreateStudent() {
+    //2.1 hooks area
+    const [teacher, setTeacher] = useState([]);
+
+    useEffect(() => {
+
+        // I Want to call th all teachers Apis
+
+        fetch(`http://localhost:1337/api/teachers`, {
+            method: 'GET'
+
+        })
+            .then(res => res.json())
+            //make the response json readable data
+
+
+
+            .then((data) => {
+                console.log(data.data)
+                setTeacher(data.data)
+
+            })
+            .catch(() => {
+
+            });
+
+
+
+
+    }, []);
+
+
+    //2.2 function area
+    let createStudent = () => {
+        console.log("hii")
+
+
+        let payload =
+        {
+            "data": {
+                "name": document.getElementById('student').value,
+                "teachers": [parseInt(document.getElementById('teacher').value)]
+            }
+
+        }
+
+        //Our payload is ready to send the server
+
+        fetch(`http://localhost:1337/api/students`, {
+           
+              method: "POST",
+              headers: {
+                
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(payload)
+        })
+            .then(res=>res.json())
+            .then((data) => {
+                alert('Student inserted successfully')
+
+                console.log(data)
+               
+
+            })
+            .catch((err) => {
+
+            });
+        console.log(payload)
+
+
+    }
+
+
+
+
+    //2.3 return statement
+
+
+
+
     return (
         <div className='container'>
 
+
+
+
             <h1 className='mt-5 text-center'>CREATE STUDENTS</h1>
+
+
+
+            <Form.Label>SELECT TEACHER</Form.Label>
+            <Form.Select id='teacher' aria-label="Default select example">
+
+                {
+                    teacher.map((cv, idx, arr) => {
+                        console.log(cv)
+                        return <option key={idx} value={cv.id}>{cv.attributes.name}</option>
+                    })
+
+                }
+
+
+            </Form.Select>
+
+
+            <br />
+
             <Form>
                 <Form.Group className="mb-3" controlId="formBasicEmail">
                     <Form.Label>NAME</Form.Label>
-                    <Form.Control type="email" placeholder="Enter email" />
+                    <Form.Control id='student' type="text" placeholder="ENTER NAME" />
 
                 </Form.Group>
 
-                <hr />
-                <Form.Select aria-label="Default select example">
-                    <option>Select Teacher</option>
-                    <option value="1">One</option>
-                    <option value="2">Two</option>
-                    <option value="3">Three</option>
-                </Form.Select>
-                <br />
 
 
-                <Button variant="primary" type="submit">
+
+                <Button variant="primary" type="button" onClick={() => { createStudent() }}>
                     Submit
                 </Button>
             </Form>
-            <br />
             <hr />
             <br />
+
             <Table striped bordered hover>
                 <thead>
                     <tr>
@@ -55,3 +156,6 @@ export default function CreateStudent() {
         </div>
     )
 }
+
+
+//export area
