@@ -9,8 +9,24 @@ import { Button, Form, Table } from 'react-bootstrap'
 export default function CreateStudent() {
     //2.1 hooks area
     const [teacher, setTeacher] = useState([]);
+    const [students, setStudents] = useState([]);
 
     useEffect(() => {
+        fetch(`http://localhost:1337/api/students`, {
+            method: "GET"
+        })
+            .then(res => res.json())
+            .then((data) => {
+                 console.log('student-->', data.data)
+                setStudents(data.data)
+
+            })
+            .catch(() => {
+
+            })
+
+
+
 
         // I Want to call th all teachers Apis
 
@@ -24,7 +40,7 @@ export default function CreateStudent() {
 
 
             .then((data) => {
-                console.log(data.data)
+                console.log("TEACHER-->data", data.data)
                 setTeacher(data.data)
 
             })
@@ -55,20 +71,20 @@ export default function CreateStudent() {
         //Our payload is ready to send the server
 
         fetch(`http://localhost:1337/api/students`, {
-           
-              method: "POST",
-              headers: {
-                
+
+            method: "POST",
+            headers: {
+
                 'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(payload)
+            },
+            body: JSON.stringify(payload)
         })
-            .then(res=>res.json())
+            .then(res => res.json())
             .then((data) => {
                 alert('Student inserted successfully')
 
                 console.log(data)
-               
+
 
             })
             .catch((err) => {
@@ -76,6 +92,37 @@ export default function CreateStudent() {
             });
         console.log(payload)
 
+
+    }
+
+
+
+    let deleteStudent= (e)=>{
+        let tr = e.target.closest('tr');
+
+        console.log(e.target.closest('tr').querySelector('td:first-child').innerHTML);
+        let sid = e.target.closest('tr').querySelector('td:first-child').innerHTML;
+        
+        let x =window.confirm('Do You Really Want To Delete')
+        console.log(typeof(x));
+        if(x=== true){
+            fetch(`http://localhost:1337/api/students/${sid}`,{
+                method:"DELETE"
+            })
+            .then(res=> res.json())
+            .then((data)=>{
+                console.log(data)
+               tr.remove();
+
+                alert('deleted successfully')
+
+
+            })
+            .catchs(err=>err)
+
+        }
+       
+        //alert('delete')
 
     }
 
@@ -98,7 +145,7 @@ export default function CreateStudent() {
 
 
             <Form.Label>SELECT TEACHER</Form.Label>
-            <Form.Select id='teacher' aria-label="Default select example">
+            <Form.Select id='teacher' name={'teacher[]'} aria-label="Default select example"  >
 
                 {
                     teacher.map((cv, idx, arr) => {
@@ -134,22 +181,26 @@ export default function CreateStudent() {
             <Table striped bordered hover>
                 <thead>
                     <tr>
-                        <th>#</th>
+                        <th>Id</th>
                         <th> Name</th>
                         <th>Action</th>
 
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>Mark</td>
-                        <td>
-                            <Button className='btn btn-success btn-sm me-3'> VIEW</Button>
-                            <Button className='btn btn-primary btn-sm me-3'> EDIT</Button>
-                            <Button className='btn btn-danger btn-sm me-3'> DELETE</Button>
-                        </td>
-                    </tr>
+                    {students.map((cv, idx, arr) => {
+
+                        return <tr>
+                            <td>{cv.id}</td>
+                            <td>{cv.attributes.name}</td>
+                            <td>
+                                <Button className='btn btn-success btn-sm me-3'> VIEW</Button>
+                                <Button className='btn btn-primary btn-sm me-3'> EDIT</Button>
+                                <Button id={`sid${cv.id}`} className='btn btn-danger btn-sm me-3' onClick={(e)=>{deleteStudent(e)}}> DELETE</Button>
+                            </td>
+                        </tr>
+                    })}
+
 
                 </tbody>
             </Table>
