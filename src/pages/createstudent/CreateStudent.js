@@ -12,7 +12,7 @@ export default function CreateStudent() {
     const [students, setStudents] = useState([]);
 
     useEffect(() => {
-        fetch(`http://localhost:1337/api/students`, {
+        fetch(`http://localhost:1337/api/students?populate=*`, {
             method: "GET"
         })
             .then(res => res.json())
@@ -83,7 +83,27 @@ export default function CreateStudent() {
             .then((data) => {
                 alert('Student inserted successfully')
 
-                console.log(data)
+
+                document.querySelector('table#myTable>tbody').innerHTML+=`<tr>
+                <td>A</td>
+                <td>B</td>
+                <td>C</td>
+                <td>{ 
+                 
+
+               cv.attributes.teachers.data.map((cv2 ,idx2,arr2)=>{
+                    return cv2.attributes.name;
+                }).toString()
+                
+                }</td>
+                <td>
+                    <Button className='btn btn-success btn-sm me-3'> VIEW</Button>
+                    <Button className='btn btn-primary btn-sm me-3'> EDIT</Button>
+                    <Button id="" className='btn btn-danger btn-sm me-3' onClick={(e)=>{deleteStudent(e)}}> DELETE</Button>
+                </td>
+            </tr>`;
+            
+            console.log(data)
 
 
             })
@@ -178,11 +198,12 @@ export default function CreateStudent() {
             <hr />
             <br />
 
-            <Table striped bordered hover>
+            <Table striped bordered hover className='myTable'>
                 <thead>
                     <tr>
                         <th>Id</th>
                         <th> Name</th>
+                        <th> TEACHER NAME</th>
                         <th>Action</th>
 
                     </tr>
@@ -193,6 +214,14 @@ export default function CreateStudent() {
                         return <tr>
                             <td>{cv.id}</td>
                             <td>{cv.attributes.name}</td>
+                            <td>{ 
+                             
+
+                           cv.attributes.teachers.data.map((cv2 ,idx2,arr2)=>{
+                                return cv2.attributes.name;
+                            }).toString()
+                            
+                            }</td>
                             <td>
                                 <Button className='btn btn-success btn-sm me-3'> VIEW</Button>
                                 <Button className='btn btn-primary btn-sm me-3'> EDIT</Button>
